@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
+import ShaderGradientCanvas from './ShaderGradientCanvas';
 import { trackDownload } from '../utils/analytics';
 import confetti from 'canvas-confetti';
 
@@ -43,15 +44,18 @@ export function DownloadSection({ app, releaseData, onOpenChangelog }) {
 
   return (
     <section id="download" className="py-20 md:py-28 bg-[#0B1F3A] text-white relative overflow-hidden">
-      {/* Subtle Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-600/10 blur-[140px] pointer-events-none" />
+      {/* Calm WebGL Shader Background */}
+      <ShaderGradientCanvas speed={0.2} frequency={0.6} amplitude={0.2} variant="calm" />
+
+      {/* Subtle Ambient Mask */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0B1F3A]/90 via-[#0B1F3A]/70 to-[#0B1F3A]/90 z-0 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column Text */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/10 border border-white/15 text-blue-300 text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/10 border border-white/15 text-blue-300 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
               <span className="material-symbols-outlined text-[16px]">download</span>
               <span>GET ANSHU MOCK</span>
             </div>
