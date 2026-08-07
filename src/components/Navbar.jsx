@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import { CONFIG } from '../config';
-import { trackNavClick } from '../utils/analytics';
 
-export function Navbar({ activeSection = 'hero', onDownloadClick }) {
+export function Navbar({ activeSection = 'hero' }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 15) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 15);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
+  const mobileLinks = [
+    { to: '/', label: 'Home', icon: 'home' },
+    { to: '/apps', label: 'Apps', icon: 'apps' },
+    { to: '/features', label: 'Features', icon: 'auto_awesome' },
+    { to: '/updates', label: 'Updates', icon: 'update' },
+    { to: '/about', label: 'About', icon: 'info' },
+    { to: '/school-login', label: 'School Login', icon: 'school' },
+  ];
+
+  const desktopSectionLinks = [
     { id: 'hero', label: 'Home' },
     { id: 'apps', label: 'Apps' },
     { id: 'features', label: 'Features' },
@@ -28,21 +34,22 @@ export function Navbar({ activeSection = 'hero', onDownloadClick }) {
     { id: 'about', label: 'About' },
   ];
 
-  const scrollToSection = (id) => {
-    trackNavClick(id);
-    setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 72;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+  const handleDesktopNavClick = (id) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const el = document.getElementById(id);
+      if (el) {
+        const offset = 72;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = el.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+      }
     }
   };
 
@@ -58,25 +65,22 @@ export function Navbar({ activeSection = 'hero', onDownloadClick }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
         
         {/* Left: Brand Logo */}
-        <a
-          href="#hero"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection('hero');
-          }}
-          className="flex items-center gap-2.5 group focus:outline-none"
+        <Link
+          to="/"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center gap-2.5 focus:outline-none"
         >
           <Logo size={34} showText={true} />
-        </a>
+        </Link>
 
-        {/* Center: Desktop Navigation Links */}
+        {/* Center: Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-          {navLinks.map((link) => (
+          {desktopSectionLinks.map((link) => (
             <button
               key={link.id}
-              onClick={() => scrollToSection(link.id)}
+              onClick={() => handleDesktopNavClick(link.id)}
               className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                activeSection === link.id
+                location.pathname === '/' && activeSection === link.id
                   ? 'text-blue-600 bg-blue-50 font-semibold'
                   : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
               }`}
@@ -84,9 +88,16 @@ export function Navbar({ activeSection = 'hero', onDownloadClick }) {
               {link.label}
             </button>
           ))}
+          <Link
+            to="/school-login"
+            className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 rounded-lg flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-[16px] text-blue-600">school</span>
+            <span>School Login</span>
+          </Link>
         </nav>
 
-        {/* Right: GitHub & Primary Action CTA */}
+        {/* Right: Desktop GitHub & Action CTA */}
         <div className="hidden md:flex items-center gap-4">
           <a
             href={CONFIG.company.githubUrl}
@@ -98,16 +109,13 @@ export function Navbar({ activeSection = 'hero', onDownloadClick }) {
             <span className="material-symbols-outlined text-[18px]">open_in_new</span>
           </a>
 
-          <button
-            onClick={() => {
-              if (onDownloadClick) onDownloadClick();
-              else scrollToSection('download');
-            }}
+          <Link
+            to="/download/anshu-mock"
             className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-subtle hover:shadow transition-all duration-200 flex items-center gap-2 border border-blue-700/20 active:scale-[0.98]"
           >
             <span className="material-symbols-outlined text-[20px]">download</span>
             <span>Download App</span>
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Hamburger Toggle Button */}
@@ -129,42 +137,36 @@ export function Navbar({ activeSection = 'hero', onDownloadClick }) {
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-x-0 top-[72px] bg-white border-b border-slate-200 shadow-xl p-5 animate-fadeIn z-50">
           <div className="flex flex-col gap-1.5">
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => scrollToSection(link.id)}
-                className={`w-full text-left px-4 py-3 text-base font-medium rounded-xl transition-colors ${
-                  activeSection === link.id
-                    ? 'text-blue-600 bg-blue-50 font-semibold'
-                    : 'text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
-
-            <a
-              href={CONFIG.company.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full text-left px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-100 rounded-xl flex items-center justify-between"
-            >
-              <span>GitHub Repository</span>
-              <span className="material-symbols-outlined text-[20px] text-slate-400">open_in_new</span>
-            </a>
+            {mobileLinks.map((link) => {
+              const isActive = location.pathname === link.to;
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-full text-left px-4 py-3 text-base font-medium rounded-xl transition-colors flex items-center gap-3 ${
+                    isActive
+                      ? 'text-blue-600 bg-blue-50 font-semibold'
+                      : 'text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[20px] text-blue-600">
+                    {link.icon}
+                  </span>
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
 
             <div className="pt-3 mt-2 border-t border-slate-100">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onDownloadClick) onDownloadClick();
-                  else scrollToSection('download');
-                }}
-                className="w-full py-3.5 px-4 text-center font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-subtle flex items-center justify-center gap-2"
+              <Link
+                to="/download/anshu-mock"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-3.5 px-4 text-center font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-subtle flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[20px]">download</span>
-                <span>Download Anshu Mock APK</span>
-              </button>
+                <span>Download Anshu Mock</span>
+              </Link>
             </div>
           </div>
         </div>
