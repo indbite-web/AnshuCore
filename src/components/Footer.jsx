@@ -15,55 +15,40 @@ export function Footer({ onNavigate, onOpenChangelog }) {
   };
 
   return (
-    <footer className="bg-[#050816] border-t border-white/10 pt-16 pb-12 relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <footer className="bg-[#071426] text-white border-t border-slate-800 pt-16 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-white/10">
+        {/* Main Footer Links */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
           
-          {/* Brand Info Column */}
+          {/* Brand Column */}
           <div className="md:col-span-2 space-y-4">
-            <Logo size={40} showText={true} />
+            <Logo size={38} showText={true} darkMode={true} />
             <p className="text-slate-400 text-sm max-w-sm leading-relaxed">
-              {CONFIG.company.tagline} AnshuCore develops intelligent software and clean digital experiences across mobile and modern web.
+              {CONFIG.company.tagline} AnshuCore creates useful, modern and thoughtfully designed digital products for mobile and web.
             </p>
-            <div className="pt-2 text-xs text-slate-500 font-mono">
-              Anshu Mock — by AnshuCore
-            </div>
           </div>
 
-          {/* Product Links */}
+          {/* Products */}
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider font-display mb-4">
-              Product
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-display mb-4">
+              Products
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
               <li>
                 <a
                   href="#hero"
                   onClick={(e) => handleLinkClick(e, 'hero')}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Anshu Mock
                 </a>
               </li>
               <li>
                 <a
-                  href="#features"
-                  onClick={(e) => handleLinkClick(e, 'features')}
-                  className="hover:text-cyan-400 transition-colors"
-                >
-                  Features
-                </a>
-              </li>
-              <li>
-                <a
                   href="#download"
                   onClick={(e) => handleLinkClick(e, 'download')}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Download APK
                 </a>
@@ -71,17 +56,17 @@ export function Footer({ onNavigate, onOpenChangelog }) {
               <li>
                 <button
                   onClick={onOpenChangelog}
-                  className="hover:text-cyan-400 transition-colors text-left"
+                  className="hover:text-white transition-colors text-left"
                 >
-                  Changelog & Releases
+                  Latest Updates
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Company */}
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider font-display mb-4">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-display mb-4">
               Company
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
@@ -89,7 +74,7 @@ export function Footer({ onNavigate, onOpenChangelog }) {
                 <a
                   href="#about"
                   onClick={(e) => handleLinkClick(e, 'about')}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   About AnshuCore
                 </a>
@@ -98,7 +83,7 @@ export function Footer({ onNavigate, onOpenChangelog }) {
                 <a
                   href="#apps"
                   onClick={(e) => handleLinkClick(e, 'apps')}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   AnshuCore Apps
                 </a>
@@ -108,7 +93,7 @@ export function Footer({ onNavigate, onOpenChangelog }) {
 
           {/* Developers & Legal */}
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider font-display mb-4">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-display mb-4">
               Developers & Legal
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
@@ -117,9 +102,10 @@ export function Footer({ onNavigate, onOpenChangelog }) {
                   href={CONFIG.company.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-400 transition-colors"
+                  className="hover:text-white transition-colors flex items-center gap-1"
                 >
-                  GitHub Repository
+                  <span>GitHub Repository</span>
+                  <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                 </a>
               </li>
               <li>
@@ -138,8 +124,8 @@ export function Footer({ onNavigate, onOpenChangelog }) {
           <div>
             © {currentYear} AnshuCore. All rights reserved.
           </div>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-slate-400 transition-colors">Anshu Mock — by AnshuCore</span>
+          <div className="flex items-center gap-4">
+            <span>Anshu Mock — by AnshuCore</span>
           </div>
         </div>
 

@@ -2,32 +2,38 @@ import React, { useId } from 'react';
 
 /**
  * Official AnshuCore SVG Logo Component
- * Renders the complete 'A' symbol with Left Leg, Right Leg, Center Blend, and Sparkle.
+ * Adapts to both Light and Navy themes with precise vector rendering.
  */
 export function Logo({
-  size = 40,
+  size = 36,
   showText = true,
   className = '',
   animated = false,
-  textClassName = 'text-xl font-bold tracking-tight text-white'
+  darkMode = false,
+  textClassName = ''
 }) {
   const instanceId = useId().replace(/:/g, '');
   const leftLegGradId = `leftLegGrad_${instanceId}`;
   const rightLegGradId = `rightLegGrad_${instanceId}`;
   const centerGlowGradId = `centerGlowGrad_${instanceId}`;
 
+  const defaultTextClass = textClassName || (
+    darkMode
+      ? 'text-xl font-bold tracking-tight text-white font-display'
+      : 'text-xl font-bold tracking-tight text-slate-900 font-display'
+  );
+
   return (
-    <div className={`inline-flex items-center gap-3 ${className}`}>
-      <div className="relative flex items-center justify-center">
+    <div className={`inline-flex items-center gap-2.5 ${className}`}>
+      <div className="relative flex items-center justify-center flex-shrink-0">
         <svg
           width={size}
           height={size}
           viewBox="0 0 800 800"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          aria-label="AnshuCore Official Logo"
+          aria-label="AnshuCore Logo"
           role="img"
-          className={`transition-transform duration-300 ${animated ? 'logo-glow-pulse' : ''}`}
         >
           <defs>
             {/* Left Leg Gradient: Deep Purple to Blue */}
@@ -113,8 +119,8 @@ export function Logo({
       </div>
 
       {showText && (
-        <span className={textClassName}>
-          Anshu<span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Core</span>
+        <span className={defaultTextClass}>
+          Anshu<span className="text-blue-600">Core</span>
         </span>
       )}
     </div>

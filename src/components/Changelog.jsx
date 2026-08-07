@@ -1,63 +1,58 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Calendar, ArrowDownCircle, HardDrive, Download, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { formatReleaseDate, formatFileSize, findApkAssets } from '../services/github';
 import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 
 export function Changelog({ isOpen, onClose, releaseData, app }) {
-  const [expandedIndex, setExpandedIndex] = useState(0); // first release expanded by default
+  const [expandedIndex, setExpandedIndex] = useState(0);
 
   if (!isOpen) return null;
 
   const releases = releaseData?.rawReleases || [];
 
-  // Helper to render markdown content safely
   const renderMarkdown = (text) => {
     if (!text) return '<p>No release notes provided.</p>';
     try {
-      const rawHtml = marked.parse(text, { breaks: true, gfm: true });
-      // If DOMPurify is available or regex fallback
-      return rawHtml;
+      return marked.parse(text, { breaks: true, gfm: true });
     } catch (e) {
       return text.replace(/\n/g, '<br />');
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
       <div
-        className="relative w-full max-w-3xl max-h-[85vh] bg-[#0A1020] border border-white/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+        className="relative w-full max-w-3xl max-h-[85vh] bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-[#050816]">
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-[#F7F9FC]">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-blue-600/20 text-cyan-400 border border-blue-500/30">
-              <FileText className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+              <span className="material-symbols-outlined text-[22px]">update</span>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-white font-display">
-                {app?.name || 'Anshu Mock'} Release Notes
+              <h3 className="text-xl font-bold text-slate-900 font-display">
+                Latest Updates
               </h3>
-              <p className="text-xs text-slate-400">
-                Official changelog fetched live from GitHub
+              <p className="text-xs text-slate-500 font-medium">
+                {app?.name || 'Anshu Mock'} Release Timeline
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
-        {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+        {/* Scrollable Release Timeline */}
+        <div className="p-6 overflow-y-auto space-y-4 flex-1">
           {releases.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
-              <p>No release records available at this moment.</p>
+            <div className="text-center py-12 text-slate-500">
+              <p>No release notes available at this moment.</p>
             </div>
           ) : (
             releases.map((rel, index) => {
@@ -69,82 +64,78 @@ export function Changelog({ isOpen, onClose, releaseData, app }) {
               return (
                 <div
                   key={rel.id || index}
-                  className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                  className={`rounded-2xl border transition-all ${
                     isLatest
-                      ? 'bg-blue-950/20 border-blue-500/40 shadow-lg'
-                      : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                      ? 'bg-white border-l-4 border-l-blue-600 border-slate-200 shadow-subtle'
+                      : 'bg-[#F7F9FC] border-slate-200'
                   }`}
                 >
-                  {/* Release Accordion Header */}
+                  {/* Timeline Header Row */}
                   <div
                     onClick={() => setExpandedIndex(isExpanded ? -1 : index)}
-                    className="p-5 flex items-center justify-between cursor-pointer select-none"
+                    className="p-4 sm:p-5 flex items-center justify-between cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className="text-lg font-bold text-white font-display">
+                      <span className="text-lg font-bold text-slate-900 font-display">
                         {rel.tag_name || rel.name}
                       </span>
 
                       {isLatest && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-semibold shadow-sm">
-                          Latest Release
+                        <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold shadow-subtle">
+                          Latest
                         </span>
                       )}
 
-                      <span className="text-xs text-slate-400 flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                      <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[14px]">calendar_month</span>
                         {formatReleaseDate(rel.published_at)}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       {apk && (
-                        <span className="hidden sm:flex items-center gap-1 text-xs text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg">
-                          <ArrowDownCircle className="w-3.5 h-3.5 text-cyan-400" />
+                        <span className="hidden sm:flex items-center gap-1 text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">
+                          <span className="material-symbols-outlined text-[14px] text-blue-600">download_for_offline</span>
                           {new Intl.NumberFormat().format(apk.download_count)} downloads
                         </span>
                       )}
 
-                      <button className="text-slate-400 hover:text-white">
-                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                      <button className="text-slate-400 hover:text-slate-700">
+                        <span className="material-symbols-outlined text-[20px]">
+                          {isExpanded ? 'expand_less' : 'expand_more'}
+                        </span>
                       </button>
                     </div>
                   </div>
 
-                  {/* Expanded Details */}
+                  {/* Expanded Body */}
                   {isExpanded && (
-                    <div className="px-5 pb-5 pt-2 border-t border-white/5 space-y-4">
-                      {/* Release Title */}
-                      <h4 className="text-sm font-semibold text-cyan-400">
+                    <div className="px-5 pb-5 pt-1 border-t border-slate-100 space-y-3">
+                      <h4 className="text-sm font-bold text-slate-900">
                         {rel.name || rel.tag_name}
                       </h4>
 
-                      {/* Release Body (Markdown) */}
                       <div
-                        className="text-sm text-slate-300 leading-relaxed prose prose-invert max-w-none prose-p:my-1 prose-ul:list-disc prose-ul:pl-4 prose-li:my-0.5"
+                        className="text-sm text-slate-600 leading-relaxed space-y-1 prose prose-slate max-w-none"
                         dangerouslySetInnerHTML={{
                           __html: renderMarkdown(rel.body)
                         }}
                       />
 
-                      {/* APK Asset Specs */}
                       {apk && (
-                        <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/[0.02] p-3 rounded-xl border border-white/5 text-xs text-slate-400">
-                          <div className="flex items-center gap-4">
-                            <span className="flex items-center gap-1 font-mono text-slate-300">
-                              <HardDrive className="w-3.5 h-3.5 text-blue-400" />
-                              {apk.name} ({formatFileSize(apk.size)})
-                            </span>
-                          </div>
+                        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F7F9FC] p-3 rounded-xl border border-slate-200 text-xs">
+                          <span className="font-mono font-medium text-slate-700">
+                            {apk.name} ({formatFileSize(apk.size)})
+                          </span>
 
                           <a
                             href={apk.browser_download_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium inline-flex items-center gap-1.5 self-start sm:self-auto"
+                            className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold inline-flex items-center gap-1.5 self-start sm:self-auto"
                           >
-                            <Download className="w-3.5 h-3.5" />
-                            Download APK
+                            <span className="material-symbols-outlined text-[16px]">download</span>
+                            <span>Download APK</span>
                           </a>
                         </div>
                       )}
@@ -157,11 +148,11 @@ export function Changelog({ isOpen, onClose, releaseData, app }) {
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-white/10 bg-[#050816] flex items-center justify-between text-xs text-slate-400">
+        <div className="px-6 py-4 border-t border-slate-200 bg-[#F7F9FC] flex items-center justify-between text-xs text-slate-500">
           <span>Official AnshuCore GitHub Release Timeline</span>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium"
+            className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold"
           >
             Close
           </button>

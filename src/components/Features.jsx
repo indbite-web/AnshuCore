@@ -1,84 +1,171 @@
 import React from 'react';
-import {
-  Sparkles,
-  ClipboardCheck,
-  Target,
-  Zap,
-  UserCheck,
-  Smartphone
-} from 'lucide-react';
-import { CONFIG } from '../config';
-
-const ICON_MAP = {
-  Sparkles,
-  ClipboardCheck,
-  Target,
-  Zap,
-  UserCheck,
-  Smartphone
-};
+import Logo from './Logo';
 
 export function Features() {
-  const mainApp = CONFIG.apps[0];
-  const features = mainApp.features;
+  const editorialFeatures = [
+    {
+      id: 'mcq-gen',
+      tag: 'AI GENERATION',
+      title: 'AI-Powered MCQ Generation',
+      description: 'Generate practice MCQs intelligently tailored to your specific subjects for focused, effective preparation.',
+      icon: 'auto_awesome',
+      preview: {
+        badge: 'AI MCQ Engine',
+        headline: 'Instant Question Generation',
+        subtext: 'Creates targeted multiple-choice questions with answer explanations in seconds.',
+        stat: '100% Focused Practice'
+      }
+    },
+    {
+      id: 'mock-test',
+      tag: 'EXAM SIMULATION',
+      title: 'Focused Mock Tests',
+      description: 'Practice timed exams through a clean and distraction-free test interface designed to build confidence.',
+      icon: 'quiz',
+      preview: {
+        badge: 'Mock Exam Mode',
+        headline: 'Distraction-Free Environment',
+        subtext: 'Simulates real test conditions with time tracking and score breakdowns.',
+        stat: 'Real Exam Timing'
+      }
+    },
+    {
+      id: 'exam-focused',
+      tag: 'STRUCTURED PRACTICE',
+      title: 'Exam-Focused Practice',
+      description: 'Prepare through structured question-based practice modules categorized by subject and difficulty.',
+      icon: 'target',
+      preview: {
+        badge: 'Category Practice',
+        headline: 'Structured Subject Modules',
+        subtext: 'Organized practice sets that let you target weak areas efficiently.',
+        stat: 'Subject Mastery'
+      }
+    },
+    {
+      id: 'personalized',
+      tag: 'PERSONALIZATION',
+      title: 'Personalized Experience',
+      description: 'Customize your study profile, track your daily practice goals, and manage your prep preferences.',
+      icon: 'account_circle',
+      preview: {
+        badge: 'User Profile',
+        headline: 'Tailored Study Dashboard',
+        subtext: 'Saves your progress history and custom test configurations.',
+        stat: 'Personal Stats'
+      }
+    },
+    {
+      id: 'modern-ui',
+      tag: 'ANDROID APP',
+      title: 'Fast, Modern Android UI',
+      description: 'Built natively for Android with clean navigation, zero clutter, and smooth interaction.',
+      icon: 'smartphone',
+      preview: {
+        badge: 'Native Android',
+        headline: 'Lightweight & Responsive',
+        subtext: 'Optimized performance for smooth navigation on all Android smartphones.',
+        stat: '60 FPS Performance'
+      }
+    }
+  ];
 
   return (
-    <section id="features" className="py-24 bg-[#0A1020] relative overflow-hidden">
-      {/* Background Radial Glow */}
-      <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="features" className="py-20 md:py-28 bg-white border-b border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
-            Anshu Mock Features
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4">
+            <span className="material-symbols-outlined text-[16px] text-blue-600">auto_awesome</span>
+            <span>ANSHU MOCK FEATURES</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white font-display">
-            Built for focused exam preparation.
+          <h2 className="text-section-heading font-bold text-slate-900 font-display">
+            Intelligent features built for better preparation.
           </h2>
 
-          <p className="mt-4 text-slate-400 text-base sm:text-lg">
-            Designed to simplify practice sessions, enhance retainment, and provide a seamless mobile test environment.
+          <p className="mt-4 text-base sm:text-lg text-slate-600 font-normal">
+            Every feature in Anshu Mock is designed to simplify practice sessions, eliminate clutter, and maximize learning retention.
           </p>
         </div>
 
-        {/* 3-Column Desktop / 2-Column Tablet / 1-Column Mobile Layout */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature) => {
-            const IconComponent = ICON_MAP[feature.iconName] || Sparkles;
+        {/* Alternating Editorial Feature Blocks */}
+        <div className="mt-20 space-y-20">
+          {editorialFeatures.map((feat, index) => {
+            const isEven = index % 2 === 0;
             return (
               <div
-                key={feature.id}
-                className="p-8 rounded-3xl bg-[#050816]/60 border border-white/10 hover:border-cyan-500/40 hover:bg-[#050816]/90 transition-all duration-300 hover:-translate-y-1 group backdrop-blur-md relative overflow-hidden shadow-xl"
+                key={feat.id}
+                className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center"
               >
-                {/* Subtle Card Glow Effect */}
-                <div className="absolute -top-12 -right-12 w-28 h-28 bg-blue-600/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition-all duration-300" />
+                {/* Text Block */}
+                <div
+                  className={`lg:col-span-6 space-y-4 ${
+                    isEven ? 'lg:order-1' : 'lg:order-2'
+                  }`}
+                >
+                  <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 tracking-wider uppercase">
+                    <span className="material-symbols-outlined text-[18px]">{feat.icon}</span>
+                    <span>{feat.tag}</span>
+                  </div>
 
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600/20 to-cyan-500/20 border border-blue-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:border-cyan-400/50 transition-all duration-300">
-                  <IconComponent className="w-6 h-6" />
+                  <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 font-display leading-snug">
+                    {feat.title}
+                  </h3>
+
+                  <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+                    {feat.description}
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                    <span className="material-symbols-outlined text-[18px] text-emerald-600">check_circle</span>
+                    <span>Confirmed Anshu Mock v1.0 Feature</span>
+                  </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="mt-6 text-xl font-bold text-white font-display">
-                  {feature.title}
-                </h3>
+                {/* Visual Preview Block */}
+                <div
+                  className={`lg:col-span-6 ${
+                    isEven ? 'lg:order-2' : 'lg:order-1'
+                  }`}
+                >
+                  <div className="p-8 sm:p-10 rounded-3xl bg-[#F7F9FC] border border-slate-200 shadow-card hover:shadow-card-hover transition-all duration-300 relative overflow-hidden">
+                    
+                    {/* Top Badge */}
+                    <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+                      <div className="flex items-center gap-2">
+                        <Logo size={24} showText={false} />
+                        <span className="text-xs font-bold text-slate-800 tracking-wide">ANSHU MOCK</span>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                        {feat.preview.badge}
+                      </span>
+                    </div>
 
-                {/* Description */}
-                <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-                  {feature.description}
-                </p>
+                    {/* Content Preview */}
+                    <div className="mt-6 space-y-3">
+                      <h4 className="text-lg font-bold text-slate-900 font-display">
+                        {feat.preview.headline}
+                      </h4>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {feat.preview.subtext}
+                      </p>
+
+                      <div className="pt-3 flex items-center justify-between">
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
+                          {feat.preview.stat}
+                        </span>
+                        <span className="material-symbols-outlined text-[20px] text-slate-400">arrow_forward</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
               </div>
             );
           })}
-        </div>
-
-        {/* Bottom Note */}
-        <div className="mt-12 text-center text-xs text-slate-500">
-          Features reflect official Anshu Mock v1.0 Android application functionality.
         </div>
 
       </div>
