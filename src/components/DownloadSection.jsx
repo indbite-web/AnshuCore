@@ -180,11 +180,11 @@ export function DownloadSection({ app, releaseData, onOpenChangelog }) {
 
               {/* Secondary Action */}
               <Link
-                to="/updates"
+                to="/download/anshu-mock"
                 className="w-full py-3 px-4 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all flex items-center justify-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[16px] text-blue-600">history</span>
-                <span>View Previous Versions</span>
+                <span>Previous Versions</span>
               </Link>
 
               {/* Security Badge */}
