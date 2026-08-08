@@ -1,9 +1,10 @@
 export const CONFIG = {
   company: {
     name: "AnshuCore",
-    tagline: "Building smarter digital experiences.",
+    tagline: "Building software that feels simpler.",
     description:
-      "AnshuCore is a technology brand focused on building useful, modern and thoughtfully designed digital products. We combine intelligent software with clean user experiences to create tools that feel simple, fast and practical.",
+      "AnshuCore is a technology brand focused on creating useful, modern and thoughtfully designed digital products.",
+    supportEmail: "Corexanshu@gmail.com",
     githubUrl: "https://github.com/indbite-web"
   },
 

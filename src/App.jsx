@@ -18,6 +18,8 @@ import FeaturesPage from './pages/FeaturesPage';
 import UpdatesPage from './pages/UpdatesPage';
 import AboutPage from './pages/AboutPage';
 import DownloadPage from './pages/DownloadPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 import SchoolLogin from './pages/SchoolLogin';
 
 import { CONFIG } from './config';
@@ -208,6 +210,8 @@ function MainAppShell() {
               }
             />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route
               path="/download/anshu-mock"
               element={

@@ -1,18 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import { CONFIG } from '../config';
 
 export function Footer({ onNavigate, onOpenChangelog }) {
   const currentYear = new Date().getFullYear();
-
-  const handleLinkClick = (e, id) => {
-    e.preventDefault();
-    if (id === 'changelog') {
-      onOpenChangelog();
-      return;
-    }
-    onNavigate(id);
-  };
 
   return (
     <footer className="bg-[#071426] text-white border-t border-slate-800 pt-16 pb-12">
@@ -25,8 +17,19 @@ export function Footer({ onNavigate, onOpenChangelog }) {
           <div className="md:col-span-2 space-y-4">
             <Logo size={38} showText={true} darkMode={true} />
             <p className="text-slate-400 text-sm max-w-sm leading-relaxed">
-              {CONFIG.company.tagline} AnshuCore creates useful, modern and thoughtfully designed digital products for mobile and web.
+              Building software that feels simpler. AnshuCore creates useful, modern and thoughtfully designed digital products.
             </p>
+
+            <div className="pt-2 text-xs text-slate-400 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-blue-400">mail</span>
+              <span>Official Support:</span>
+              <a
+                href="mailto:Corexanshu@gmail.com"
+                className="text-blue-400 hover:text-blue-300 font-semibold underline"
+              >
+                Corexanshu@gmail.com
+              </a>
+            </div>
           </div>
 
           {/* Products */}
@@ -36,30 +39,19 @@ export function Footer({ onNavigate, onOpenChangelog }) {
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
               <li>
-                <a
-                  href="#hero"
-                  onClick={(e) => handleLinkClick(e, 'hero')}
-                  className="hover:text-white transition-colors"
-                >
+                <Link to="/apps" className="hover:text-white transition-colors">
                   Anshu Mock
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#download"
-                  onClick={(e) => handleLinkClick(e, 'download')}
-                  className="hover:text-white transition-colors"
-                >
+                <Link to="/download/anshu-mock" className="hover:text-white transition-colors">
                   Download APK
-                </a>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={onOpenChangelog}
-                  className="hover:text-white transition-colors text-left"
-                >
+                <Link to="/updates" className="hover:text-white transition-colors">
                   Latest Updates
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -71,22 +63,14 @@ export function Footer({ onNavigate, onOpenChangelog }) {
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
               <li>
-                <a
-                  href="#about"
-                  onClick={(e) => handleLinkClick(e, 'about')}
-                  className="hover:text-white transition-colors"
-                >
+                <Link to="/about" className="hover:text-white transition-colors">
                   About AnshuCore
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#apps"
-                  onClick={(e) => handleLinkClick(e, 'apps')}
-                  className="hover:text-white transition-colors"
-                >
+                <Link to="/apps" className="hover:text-white transition-colors">
                   AnshuCore Apps
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -109,10 +93,14 @@ export function Footer({ onNavigate, onOpenChangelog }) {
                 </a>
               </li>
               <li>
-                <span className="text-slate-500 cursor-not-allowed">Privacy Policy</span>
+                <Link to="/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
               </li>
               <li>
-                <span className="text-slate-500 cursor-not-allowed">Terms of Service</span>
+                <Link to="/terms" className="hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
               </li>
             </ul>
           </div>
@@ -125,7 +113,15 @@ export function Footer({ onNavigate, onOpenChangelog }) {
             © {currentYear} AnshuCore. All rights reserved.
           </div>
           <div className="flex items-center gap-4">
-            <span>Anshu Mock — by AnshuCore</span>
+            <Link to="/privacy" className="hover:text-slate-400 transition-colors">
+              Privacy
+            </Link>
+            <span>•</span>
+            <Link to="/terms" className="hover:text-slate-400 transition-colors">
+              Terms
+            </Link>
+            <span>•</span>
+            <span>Anshu Mock by AnshuCore</span>
           </div>
         </div>
 
