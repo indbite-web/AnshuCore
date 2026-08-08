@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import ShaderGradientCanvas from './ShaderGradientCanvas';
 import { trackDownload } from '../utils/analytics';
@@ -178,13 +179,13 @@ export function DownloadSection({ app, releaseData, onOpenChangelog }) {
               )}
 
               {/* Secondary Action */}
-              <button
-                onClick={onOpenChangelog}
+              <Link
+                to="/updates"
                 className="w-full py-3 px-4 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all flex items-center justify-center gap-1.5"
               >
-                <span className="material-symbols-outlined text-[16px] text-blue-600">update</span>
-                <span>View Release Notes</span>
-              </button>
+                <span className="material-symbols-outlined text-[16px] text-blue-600">history</span>
+                <span>View Previous Versions</span>
+              </Link>
 
               {/* Security Badge */}
               <div className="pt-2 text-center flex items-center justify-center gap-1.5 text-xs text-slate-500">

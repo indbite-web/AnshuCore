@@ -5,6 +5,7 @@ import ShaderGradientCanvas from '../components/ShaderGradientCanvas';
 import { trackDownload } from '../utils/analytics';
 import confetti from 'canvas-confetti';
 import { marked } from 'marked';
+import { findApkAssets, formatFileSize, formatReleaseDate } from '../services/github';
 
 export function DownloadPage({ app, releaseData, loading }) {
   const [downloading, setDownloading] = useState(false);
@@ -19,10 +20,14 @@ export function DownloadPage({ app, releaseData, loading }) {
     latestRelease,
     downloadUrl,
     hasApk,
+    rawReleases = [],
     error
   } = releaseData || {};
 
-  const handleDownload = () => {
+  // Extract older releases (excluding latest release)
+  const previousReleases = rawReleases.filter((rel) => rel.id !== latestRelease?.id);
+
+  const handleDownloadLatest = () => {
     if (!downloadUrl) return;
 
     trackDownload(app?.name || 'Anshu Mock', latestVersion, downloadUrl);
@@ -110,7 +115,7 @@ export function DownloadPage({ app, releaseData, loading }) {
           </p>
         </div>
 
-        {/* Main Download Card */}
+        {/* Main Download Card (Focused on LATEST Release) */}
         <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-white text-slate-900 shadow-2xl space-y-6 max-w-lg mx-auto">
           
           {loading ? (
@@ -123,6 +128,16 @@ export function DownloadPage({ app, releaseData, loading }) {
             </div>
           ) : (
             <>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <span className="text-xs font-extrabold text-blue-600 uppercase tracking-wider flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[16px]">verified</span>
+                  Latest Release
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold font-mono">
+                  {latestVersion}
+                </span>
+              </div>
+
               {/* LIVE Specs Grid */}
               <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-[#F7F9FC] border border-slate-200">
                 <div>
@@ -154,7 +169,7 @@ export function DownloadPage({ app, releaseData, loading }) {
                 <div>
                   <div className="text-xs font-medium text-slate-500 flex items-center gap-1">
                     <span className="material-symbols-outlined text-[16px] text-cyan-600">calendar_month</span>
-                    <span>Updated</span>
+                    <span>Released</span>
                   </div>
                   <div className="text-sm font-bold text-slate-900 mt-0.5">{latestDateFormatted}</div>
                 </div>
@@ -174,7 +189,7 @@ export function DownloadPage({ app, releaseData, loading }) {
               {/* Large Primary Download APK Button */}
               {hasApk ? (
                 <button
-                  onClick={handleDownload}
+                  onClick={handleDownloadLatest}
                   disabled={downloading}
                   className={`w-full py-4 px-6 text-base font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 ${
                     downloadSuccess
@@ -187,7 +202,7 @@ export function DownloadPage({ app, releaseData, loading }) {
                   {downloadSuccess ? (
                     <>
                       <span className="material-symbols-outlined text-[22px]">check_circle</span>
-                      <span>Downloading APK...</span>
+                      <span>Downloading Latest APK...</span>
                     </>
                   ) : downloading ? (
                     <>
@@ -197,7 +212,7 @@ export function DownloadPage({ app, releaseData, loading }) {
                   ) : (
                     <>
                       <span className="material-symbols-outlined text-[22px]">download</span>
-                      <span>Download APK</span>
+                      <span>Download Latest APK ({latestVersion})</span>
                     </>
                   )}
                 </button>
@@ -227,9 +242,80 @@ export function DownloadPage({ app, releaseData, loading }) {
 
         </div>
 
+        {/* PREVIOUS VERSIONS COMPACT LIST (Section 6 Requirement) */}
+        {previousReleases.length > 0 && (
+          <div className="mt-8 max-w-lg mx-auto p-6 rounded-3xl bg-white text-slate-900 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900 font-display flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-slate-600">history</span>
+                Previous Versions
+              </h3>
+              <Link
+                to="/updates"
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+              >
+                <span>View Changelog</span>
+                <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+              {previousReleases.map((rel) => {
+                const apkAssets = findApkAssets(rel);
+                const apk = apkAssets.length > 0 ? apkAssets[0] : null;
+                const tagName = rel.tag_name || rel.name || 'v1.0.0';
+
+                return (
+                  <div
+                    key={rel.id}
+                    className="p-3.5 rounded-2xl bg-[#F7F9FC] border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900 font-mono text-sm">
+                          {tagName}
+                        </span>
+                        {apk && (
+                          <span className="font-semibold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200 text-[11px]">
+                            {formatFileSize(apk.size)}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="text-[11px] text-slate-500 flex items-center gap-3">
+                        {apk && (
+                          <span>
+                            {new Intl.NumberFormat().format(apk.download_count || 0)} downloads
+                          </span>
+                        )}
+                        <span>Released: {formatReleaseDate(rel.published_at)}</span>
+                      </div>
+                    </div>
+
+                    {apk ? (
+                      <a
+                        href={apk.browser_download_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs inline-flex items-center gap-1 shadow-subtle transition-all flex-shrink-0"
+                      >
+                        <span className="material-symbols-outlined text-[15px]">download</span>
+                        <span>Download</span>
+                      </a>
+                    ) : (
+                      <span className="text-slate-400 italic">No APK</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Latest Release Notes Teaser */}
         {latestRelease && (
-          <div className="mt-10 max-w-lg mx-auto p-6 rounded-2xl bg-white/10 border border-white/15 text-slate-200 backdrop-blur-sm space-y-3">
+          <div className="mt-8 max-w-lg mx-auto p-6 rounded-2xl bg-white/10 border border-white/15 text-slate-200 backdrop-blur-sm space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[18px] text-blue-400">update</span>

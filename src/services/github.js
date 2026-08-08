@@ -176,10 +176,14 @@ export async function fetchAppReleases(appConfig) {
       })
     ]);
 
-    // Filter out draft releases from all releases array
+    // Filter out draft releases from all releases array and sort newest first
     const validReleases = Array.isArray(allReleasesData)
       ? allReleasesData.filter((r) => !r.draft)
       : [];
+
+    validReleases.sort(
+      (a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at)
+    );
 
     // Fallback: If /releases/latest failed or returned null, use first non-draft non-prerelease from /releases
     let latestRelease = latestReleaseData;
