@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { formatReleaseDate, formatFileSize, findApkAssets } from '../services/github';
 import { marked } from 'marked';
+import { trackDownload } from '../utils/analytics';
 
 export function UpdatesPage({ app, releaseData, loading }) {
   const [expandedIds, setExpandedIds] = useState({});

@@ -11,6 +11,22 @@ export function DownloadPage({ app, releaseData, loading }) {
   const [showPreviousVersions, setShowPreviousVersions] = useState(false);
   const [selectedReleaseForNotes, setSelectedReleaseForNotes] = useState(null);
 
+  const {
+    latestVersion = 'v1.0.0',
+    latestSizeFormatted = 'N/A',
+    latestDateFormatted = 'N/A',
+    latestDownloadCount = 0,
+    totalDownloads = 0,
+    latestRelease,
+    downloadUrl,
+    hasApk,
+    rawReleases = [],
+    error
+  } = releaseData || {};
+
+  // Extract older releases excluding the latest release
+  const previousReleases = rawReleases.filter((rel) => rel.id !== latestRelease?.id);
+
   const renderMarkdown = (text) => {
     if (!text || !text.trim()) {
       return '<p class="text-slate-400 italic">No release notes provided for this version.</p>';
