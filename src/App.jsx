@@ -164,6 +164,7 @@ function MainAppShell() {
                     <Hero
                       onDownloadClick={() => scrollToSection('download')}
                       onExploreClick={() => scrollToSection('features')}
+                      latestVersion={mainReleaseData?.latestVersion}
                     />
                     <Apps
                       appReleases={appReleases}

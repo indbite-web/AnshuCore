@@ -40,6 +40,7 @@ export function Home({ appReleases, loading, onOpenChangelog }) {
       <Hero
         onDownloadClick={() => navigate('/download/anshu-mock')}
         onExploreClick={() => navigate('/features')}
+        latestVersion={latestVersion}
       />
 
       {/* Short Introduction */}

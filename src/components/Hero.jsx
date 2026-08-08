@@ -2,7 +2,7 @@ import React from 'react';
 import Logo from './Logo';
 import ShaderGradientCanvas from './ShaderGradientCanvas';
 
-export function Hero({ onDownloadClick, onExploreClick }) {
+export function Hero({ onDownloadClick, onExploreClick, latestVersion }) {
   return (
     <section
       id="hero"
@@ -88,9 +88,11 @@ export function Hero({ onDownloadClick, onExploreClick }) {
                     <Logo size={22} showText={false} />
                     <span className="text-xs font-bold tracking-wide text-white">ANSHU MOCK</span>
                   </div>
-                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/30">
-                    v1.0.0
-                  </span>
+                  {latestVersion && (
+                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/30">
+                      {latestVersion}
+                    </span>
+                  )}
                 </div>
 
                 {/* AI Question Simulation Card */}
