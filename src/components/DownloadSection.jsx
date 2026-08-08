@@ -6,9 +6,6 @@ import { trackDownload } from '../utils/analytics';
 import confetti from 'canvas-confetti';
 
 export function DownloadSection({ app, releaseData, onOpenChangelog }) {
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
-
   const {
     latestVersion = 'v1.0.0',
     latestSizeFormatted = 'N/A',
@@ -17,31 +14,6 @@ export function DownloadSection({ app, releaseData, onOpenChangelog }) {
     downloadUrl,
     hasApk
   } = releaseData || {};
-
-  const handleDownload = () => {
-    if (!downloadUrl) return;
-
-    trackDownload(app.name, latestVersion, downloadUrl);
-    setDownloading(true);
-
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
-        colors: ['#2563EB', '#3B82F6', '#60A5FA', '#00A3FF']
-      });
-    } catch (e) {
-      // Ignore
-    }
-
-    setTimeout(() => {
-      setDownloading(false);
-      setDownloadSuccess(true);
-      window.location.href = downloadUrl;
-      setTimeout(() => setDownloadSuccess(false), 4000);
-    }, 600);
-  };
 
   return (
     <section id="download" className="py-20 md:py-28 bg-[#0B1F3A] text-white relative overflow-hidden">
@@ -139,44 +111,13 @@ export function DownloadSection({ app, releaseData, onOpenChangelog }) {
               </div>
 
               {/* Large Download Button */}
-              {hasApk ? (
-                <button
-                  onClick={handleDownload}
-                  disabled={downloading}
-                  className={`w-full py-4 px-6 text-base font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 ${
-                    downloadSuccess
-                      ? 'bg-emerald-600 text-white'
-                      : downloading
-                      ? 'bg-blue-700 text-white cursor-wait'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-700/20 active:scale-[0.98]'
-                  }`}
-                >
-                  {downloadSuccess ? (
-                    <>
-                      <span className="material-symbols-outlined text-[22px]">check_circle</span>
-                      <span>Downloading APK...</span>
-                    </>
-                  ) : downloading ? (
-                    <>
-                      <span className="material-symbols-outlined text-[22px] animate-spin">refresh</span>
-                      <span>Initiating Download...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-[22px]">download</span>
-                      <span>Download APK</span>
-                    </>
-                  )}
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="w-full py-4 px-6 text-base font-bold rounded-xl bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-[20px]">error</span>
-                  <span>APK temporarily unavailable</span>
-                </button>
-              )}
+              <Link
+                to="/download/anshu-mock"
+                className="w-full py-4 px-6 text-base font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white border border-blue-700/20 active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-[22px]">download</span>
+                <span>Download Anshu Mock</span>
+              </Link>
 
               {/* Secondary Action */}
               <Link

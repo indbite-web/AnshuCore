@@ -8,51 +8,8 @@ import { marked } from 'marked';
 import { findApkAssets, formatFileSize, formatReleaseDate } from '../services/github';
 
 export function DownloadPage({ app, releaseData, loading }) {
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [showPreviousVersions, setShowPreviousVersions] = useState(false);
   const [selectedReleaseForNotes, setSelectedReleaseForNotes] = useState(null);
-
-  const {
-    latestVersion = 'v1.0.0',
-    latestSizeFormatted = 'N/A',
-    latestDateFormatted = 'N/A',
-    latestDownloadCount = 0,
-    totalDownloads = 0,
-    latestRelease,
-    downloadUrl,
-    hasApk,
-    rawReleases = [],
-    error
-  } = releaseData || {};
-
-  // Extract older releases excluding the latest release
-  const previousReleases = rawReleases.filter((rel) => rel.id !== latestRelease?.id);
-
-  const handleDownloadLatest = () => {
-    if (!downloadUrl) return;
-
-    trackDownload(app?.name || 'Anshu Mock', latestVersion, downloadUrl);
-    setDownloading(true);
-
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
-        colors: ['#2563EB', '#3B82F6', '#60A5FA', '#00A3FF']
-      });
-    } catch (e) {
-      // Ignore
-    }
-
-    setTimeout(() => {
-      setDownloading(false);
-      setDownloadSuccess(true);
-      window.location.href = downloadUrl;
-      setTimeout(() => setDownloadSuccess(false), 4000);
-    }, 600);
-  };
 
   const renderMarkdown = (text) => {
     if (!text || !text.trim()) {
@@ -191,35 +148,27 @@ export function DownloadPage({ app, releaseData, loading }) {
               </div>
 
               {/* Large Primary Download APK Button */}
-              {hasApk ? (
-                <button
-                  onClick={handleDownloadLatest}
-                  disabled={downloading}
-                  className={`w-full py-4 px-6 text-base font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 ${
-                    downloadSuccess
-                      ? 'bg-emerald-600 text-white'
-                      : downloading
-                      ? 'bg-blue-700 text-white cursor-wait'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-700/20 active:scale-[0.98]'
-                  }`}
+              {hasApk && downloadUrl ? (
+                <a
+                  href={downloadUrl}
+                  onClick={() => {
+                    trackDownload(app?.name || 'Anshu Mock', latestVersion, downloadUrl);
+                    try {
+                      confetti({
+                        particleCount: 50,
+                        spread: 60,
+                        origin: { y: 0.7 },
+                        colors: ['#2563EB', '#3B82F6', '#60A5FA', '#00A3FF']
+                      });
+                    } catch (e) {
+                      // Ignore
+                    }
+                  }}
+                  className="w-full py-4 px-6 text-base font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white border border-blue-700/20 active:scale-[0.98]"
                 >
-                  {downloadSuccess ? (
-                    <>
-                      <span className="material-symbols-outlined text-[22px]">check_circle</span>
-                      <span>Downloading Latest APK...</span>
-                    </>
-                  ) : downloading ? (
-                    <>
-                      <span className="material-symbols-outlined text-[22px] animate-spin">refresh</span>
-                      <span>Initiating Download...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-[22px]">download</span>
-                      <span>Download APK</span>
-                    </>
-                  )}
-                </button>
+                  <span className="material-symbols-outlined text-[22px]">download</span>
+                  <span>Download APK</span>
+                </a>
               ) : (
                 <button
                   disabled
@@ -325,9 +274,7 @@ export function DownloadPage({ app, releaseData, loading }) {
                           {apk ? (
                             <a
                               href={apk.browser_download_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              download
+                              onClick={() => trackDownload(app?.name || 'Anshu Mock', tagName, apk.browser_download_url)}
                               className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-subtle transition-all"
                             >
                               <span className="material-symbols-outlined text-[16px]">download</span>

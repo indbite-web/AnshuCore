@@ -26,32 +26,13 @@ export function Navbar({ activeSection = 'hero' }) {
     { to: '/school-login', label: 'School Login', icon: 'school' },
   ];
 
-  const desktopSectionLinks = [
-    { id: 'hero', label: 'Home' },
-    { id: 'apps', label: 'Apps' },
-    { id: 'features', label: 'Features' },
-    { id: 'changelog', label: 'Updates' },
-    { id: 'about', label: 'About' },
+  const desktopNavLinks = [
+    { to: '/', label: 'Home' },
+    { to: '/apps', label: 'Apps' },
+    { to: '/features', label: 'Features' },
+    { to: '/updates', label: 'Updates' },
+    { to: '/about', label: 'About' },
   ];
-
-  const handleDesktopNavClick = (id) => {
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      const el = document.getElementById(id);
-      if (el) {
-        const offset = 72;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = el.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
-      }
-    }
-  };
 
   return (
     <header
@@ -75,22 +56,29 @@ export function Navbar({ activeSection = 'hero' }) {
 
         {/* Center: Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-          {desktopSectionLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => handleDesktopNavClick(link.id)}
-              className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                location.pathname === '/' && activeSection === link.id
-                  ? 'text-blue-600 bg-blue-50 font-semibold'
-                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
-              }`}
-            >
-              {link.label}
-            </button>
-          ))}
+          {desktopNavLinks.map((link) => {
+            const isActive = location.pathname === link.to;
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive
+                    ? 'text-blue-600 bg-blue-50 font-semibold'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <Link
             to="/school-login"
-            className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 rounded-lg flex items-center gap-1"
+            className={`px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-1 transition-colors ${
+              location.pathname === '/school-login'
+                ? 'text-blue-600 bg-blue-50 font-semibold'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
+            }`}
           >
             <span className="material-symbols-outlined text-[16px] text-blue-600">school</span>
             <span>School Login</span>

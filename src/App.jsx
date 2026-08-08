@@ -47,6 +47,7 @@ function MainAppShell() {
   });
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Responsive width listener
   useEffect(() => {
@@ -164,8 +165,8 @@ function MainAppShell() {
                 ) : (
                   <div className="space-y-0">
                     <Hero
-                      onDownloadClick={() => scrollToSection('download')}
-                      onExploreClick={() => scrollToSection('features')}
+                      onDownloadClick={() => navigate('/download/anshu-mock')}
+                      onExploreClick={() => navigate('/features')}
                       latestVersion={mainReleaseData?.latestVersion}
                     />
                     <Apps

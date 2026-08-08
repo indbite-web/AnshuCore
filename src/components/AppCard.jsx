@@ -4,33 +4,6 @@ import { trackDownload } from '../utils/analytics';
 import confetti from 'canvas-confetti';
 
 export function AppCard({ app, releaseData, loading, onOpenChangelog, onRetry }) {
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
-
-  const handleDownloadClick = () => {
-    if (!releaseData?.downloadUrl) return;
-
-    trackDownload(app.name, releaseData.latestVersion, releaseData.downloadUrl);
-    setDownloading(true);
-
-    try {
-      confetti({
-        particleCount: 45,
-        spread: 60,
-        origin: { y: 0.75 },
-        colors: ['#2563EB', '#3B82F6', '#1D4ED8', '#00A3FF']
-      });
-    } catch (err) {
-      // Ignore
-    }
-
-    setTimeout(() => {
-      setDownloading(false);
-      setDownloadSuccess(true);
-      window.location.href = releaseData.downloadUrl;
-      setTimeout(() => setDownloadSuccess(false), 4000);
-    }, 600);
-  };
 
   if (loading) {
     return (
@@ -128,35 +101,27 @@ export function AppCard({ app, releaseData, loading, onOpenChangelog, onRetry })
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-            {hasApk ? (
-              <button
-                onClick={handleDownloadClick}
-                disabled={downloading}
-                className={`py-3.5 px-6 text-sm font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 ${
-                  downloadSuccess
-                    ? 'bg-emerald-600 text-white'
-                    : downloading
-                    ? 'bg-blue-700 text-white cursor-wait'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-700/20'
-                }`}
+            {hasApk && releaseData?.downloadUrl ? (
+              <a
+                href={releaseData.downloadUrl}
+                onClick={() => {
+                  trackDownload(app.name, releaseData.latestVersion, releaseData.downloadUrl);
+                  try {
+                    confetti({
+                      particleCount: 45,
+                      spread: 60,
+                      origin: { y: 0.75 },
+                      colors: ['#2563EB', '#3B82F6', '#1D4ED8', '#00A3FF']
+                    });
+                  } catch (err) {
+                    // Ignore
+                  }
+                }}
+                className="py-3.5 px-6 text-sm font-bold rounded-xl shadow-subtle transition-all duration-200 flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white border border-blue-700/20 active:scale-[0.98]"
               >
-                {downloadSuccess ? (
-                  <>
-                    <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                    <span>Downloading APK...</span>
-                  </>
-                ) : downloading ? (
-                  <>
-                    <span className="material-symbols-outlined text-[20px] animate-spin">refresh</span>
-                    <span>Initiating Download...</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="material-symbols-outlined text-[20px]">download</span>
-                    <span>Download APK ({latestSizeFormatted})</span>
-                  </>
-                )}
-              </button>
+                <span className="material-symbols-outlined text-[20px]">download</span>
+                <span>Download APK ({latestSizeFormatted})</span>
+              </a>
             ) : (
               <button
                 disabled

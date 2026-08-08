@@ -111,9 +111,7 @@ export function UpdatesPage({ app, releaseData, loading }) {
             {apk ? (
               <a
                 href={apk.browser_download_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
+                onClick={() => trackDownload(app?.name || 'Anshu Mock', tagName, apk.browser_download_url)}
                 className="py-3 px-5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] rounded-xl shadow-subtle transition-all duration-150 flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">download</span>
