@@ -68,6 +68,6 @@ export const CONFIG = {
   ],
 
   github: {
-    cacheDuration: 15 * 60 * 1000 // 15 minutes
+    cacheDuration: 3 * 60 * 1000 // 3 minutes
   }
 };

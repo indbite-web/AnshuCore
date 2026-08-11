@@ -1,6 +1,6 @@
-import { CONFIG } from '../config';
+import { CONFIG } from '../config.js';
 
-const CACHE_PREFIX = 'anshucore_github_cache_v2_';
+const CACHE_PREFIX = 'anshucore_github_cache_v3_';
 
 /**
  * Format bytes into human-readable size string (e.g. 24.3 MB)
