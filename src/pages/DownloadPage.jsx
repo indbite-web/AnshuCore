@@ -25,7 +25,9 @@ export function DownloadPage({ app, releaseData, loading }) {
   } = releaseData || {};
 
   // Extract older releases excluding the latest release
-  const previousReleases = rawReleases.filter((rel) => rel.id !== latestRelease?.id);
+  const previousReleases = rawReleases.filter(
+    (rel) => rel.id !== latestRelease?.id && rel.tag_name !== latestRelease?.tag_name
+  );
 
   const renderMarkdown = (text) => {
     if (!text || !text.trim()) {
@@ -248,7 +250,8 @@ export function DownloadPage({ app, releaseData, loading }) {
                   {previousReleases.map((rel) => {
                     const apkAssets = findApkAssets(rel);
                     const apk = apkAssets.length > 0 ? apkAssets[0] : null;
-                    const tagName = rel.tag_name || rel.name || 'v1.0.0';
+                    const rawTag = rel.tag_name || rel.name || 'v1.0.0';
+                    const tagName = rawTag.startsWith('v') || rawTag.startsWith('V') ? rawTag : `v${rawTag}`;
 
                     return (
                       <div

@@ -31,7 +31,8 @@ export function UpdatesPage({ app, releaseData, loading }) {
   const renderReleaseCard = (rel, isLatest) => {
     const apkAssets = findApkAssets(rel);
     const apk = apkAssets.length > 0 ? apkAssets[0] : null;
-    const tagName = rel.tag_name || rel.name || 'v1.0.0';
+    const rawTag = rel.tag_name || rel.name || 'v1.0.0';
+    const tagName = rawTag.startsWith('v') || rawTag.startsWith('V') ? rawTag : `v${rawTag}`;
     const isExpanded = Boolean(expandedIds[rel.id]);
 
     return (

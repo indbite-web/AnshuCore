@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
 
-const CACHE_PREFIX = 'anshucore_github_cache_';
+const CACHE_PREFIX = 'anshucore_github_cache_v2_';
 
 /**
  * Format bytes into human-readable size string (e.g. 24.3 MB)
@@ -30,6 +30,29 @@ export function formatReleaseDate(dateString) {
   } catch (e) {
     return dateString;
   }
+}
+
+/**
+ * Parse semantic version string (e.g., "v1.2.0" -> [1, 2, 0])
+ */
+export function parseSemVer(v) {
+  if (!v) return [0, 0, 0];
+  const clean = String(v).replace(/^v/i, '').trim();
+  const parts = clean.split('.').map((p) => parseInt(p, 10) || 0);
+  return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
+}
+
+/**
+ * Compare two semantic version strings
+ * Returns > 0 if v1 > v2, < 0 if v1 < v2, 0 if equal
+ */
+export function compareSemVer(v1, v2) {
+  const p1 = parseSemVer(v1);
+  const p2 = parseSemVer(v2);
+  for (let i = 0; i < 3; i++) {
+    if (p1[i] !== p2[i]) return p1[i] - p2[i];
+  }
+  return 0;
 }
 
 /**
@@ -137,10 +160,11 @@ export async function fetchLatestRelease(owner, repo) {
 
 /**
  * Fetch all releases from /releases endpoint for Updates/Changelog and historical versions.
+ * Includes supplementary tag fetching to ensure no published release tag (e.g. 1.2.0) is missed.
  */
 export async function fetchAllReleases(owner, repo) {
   const response = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/releases`,
+    `https://api.github.com/repos/${owner}/${repo}/releases?per_page=100`,
     {
       headers: {
         Accept: 'application/vnd.github.v3+json'
@@ -150,7 +174,73 @@ export async function fetchAllReleases(owner, repo) {
   if (!response.ok) {
     throw new Error(`GitHub API /releases error: ${response.status} ${response.statusText}`);
   }
-  return await response.json();
+  const releases = await response.json();
+
+  // Supplementary fetch: Query repository tags to ensure no published release tag (e.g. 1.2.0) is missed
+  try {
+    const tagsResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/tags?per_page=100`,
+      {
+        headers: {
+          Accept: 'application/vnd.github.v3+json'
+        }
+      }
+    );
+    if (tagsResponse.ok) {
+      const tags = await tagsResponse.json();
+      const existingTagNames = new Set(
+        releases.map((r) => (r.tag_name || '').toLowerCase())
+      );
+
+      const missingTags = tags.filter((t) => {
+        if (!t || !t.name) return false;
+        const nameLower = t.name.toLowerCase();
+        const unvName = nameLower.replace(/^v/i, '');
+        return (
+          !existingTagNames.has(nameLower) &&
+          !existingTagNames.has(`v${unvName}`) &&
+          !existingTagNames.has(unvName)
+        );
+      });
+
+      if (missingTags.length > 0) {
+        const fetchedMissing = await Promise.all(
+          missingTags.map(async (tag) => {
+            try {
+              const relRes = await fetch(
+                `https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag.name}`,
+                {
+                  headers: {
+                    Accept: 'application/vnd.github.v3+json'
+                  }
+                }
+              );
+              if (relRes.ok) {
+                return await relRes.json();
+              }
+            } catch (err) {
+              console.warn(`Could not fetch release for tag ${tag.name}:`, err);
+            }
+            return null;
+          })
+        );
+
+        fetchedMissing.forEach((rel) => {
+          if (
+            rel &&
+            rel.id &&
+            !releases.some((r) => r.id === rel.id || r.tag_name === rel.tag_name)
+          ) {
+            releases.push(rel);
+          }
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch tags for release verification:', err);
+  }
+
+  return releases;
 }
 
 /**
@@ -176,16 +266,19 @@ export async function fetchAppReleases(appConfig) {
       })
     ]);
 
-    // Filter out draft releases from all releases array and sort newest first
+    // Filter out draft releases from all releases array
     const validReleases = Array.isArray(allReleasesData)
       ? allReleasesData.filter((r) => !r.draft)
       : [];
 
-    validReleases.sort(
-      (a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at)
-    );
+    // Sort descending by Semantic Version, falling back to release date if semvers are equal
+    validReleases.sort((a, b) => {
+      const semverDiff = compareSemVer(b.tag_name || b.name, a.tag_name || a.name);
+      if (semverDiff !== 0) return semverDiff;
+      return new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at);
+    });
 
-    // Fallback: If /releases/latest failed or returned null, use first non-draft non-prerelease from /releases
+    // Fallback: If /releases/latest failed or returned null, use first valid release from sorted list
     let latestRelease = latestReleaseData;
     if (!latestRelease || latestRelease.draft) {
       const stable = validReleases.filter((r) => !r.prerelease);
@@ -199,11 +292,16 @@ export async function fetchAppReleases(appConfig) {
     const totalDownloads = calculateTotalDownloads(validReleases);
     const latestDownloadCount = latestApkAsset ? (latestApkAsset.download_count || 0) : 0;
 
+    const rawVersion = latestRelease ? (latestRelease.tag_name || latestRelease.name) : '';
+    const latestVersion = rawVersion
+      ? (rawVersion.startsWith('v') || rawVersion.startsWith('V') ? rawVersion : `v${rawVersion}`)
+      : '';
+
     const processedData = {
       rawReleases: validReleases,
       latestRelease,
       latestApkAsset,
-      latestVersion: latestRelease ? (latestRelease.tag_name || latestRelease.name) : '',
+      latestVersion,
       releaseName: latestRelease ? latestRelease.name : 'Latest Release',
       latestDownloadCount,
       totalDownloads,
@@ -248,3 +346,4 @@ export async function fetchAppReleases(appConfig) {
     };
   }
 }
+
