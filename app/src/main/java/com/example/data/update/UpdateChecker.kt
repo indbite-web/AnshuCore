@@ -19,7 +19,7 @@ class UpdateChecker(
 ) {
 
     companion object {
-        const val DEFAULT_REPO = "anshumock/anshu-mock"
+        const val DEFAULT_REPO = "indbite-web/Anshu-Mock-"
         private const val TAG = "UpdateChecker"
 
         fun cleanVersion(version: String): String {
@@ -29,8 +29,12 @@ class UpdateChecker(
         }
 
         fun isVersionNewer(installedVersion: String, latestVersion: String): Boolean {
-            val currentParts = cleanVersion(installedVersion).split(".").mapNotNull { it.toIntOrNull() }
-            val latestParts = cleanVersion(latestVersion).split(".").mapNotNull { it.toIntOrNull() }
+            val currentParts = cleanVersion(installedVersion).split(".").mapNotNull {
+                it.takeWhile { char -> char.isDigit() }.toIntOrNull()
+            }
+            val latestParts = cleanVersion(latestVersion).split(".").mapNotNull {
+                it.takeWhile { char -> char.isDigit() }.toIntOrNull()
+            }
 
             val maxLength = maxOf(currentParts.size, latestParts.size)
             for (i in 0 until maxLength) {
@@ -65,7 +69,6 @@ class UpdateChecker(
                     }
                 } else if (response.code == 404) {
                     Log.i(TAG, "GET /releases/latest returned 404 for $customRepo. Attempting /releases list.")
-                    // Fallback to releases list
                     val listUrl = "https://api.github.com/repos/$customRepo/releases"
                     val listRequest = Request.Builder()
                         .url(listUrl)
@@ -78,26 +81,39 @@ class UpdateChecker(
                             val listBody = listResponse.body?.string()
                             if (!listBody.isNullOrBlank()) {
                                 val releasesArray = JSONArray(listBody)
-                                if (releasesArray.length() > 0) {
-                                    releaseJson = releasesArray.getJSONObject(0)
+                                for (i in 0 until releasesArray.length()) {
+                                    val candidate = releasesArray.getJSONObject(i)
+                                    if (!candidate.optBoolean("draft", false)) {
+                                        releaseJson = candidate
+                                        break
+                                    }
                                 }
                             }
-                        } else {
-                            Log.i(TAG, "GitHub releases list returned HTTP ${listResponse.code} for $customRepo.")
+                        } else if (listResponse.code != 404) {
+                            return@withContext Result.failure(
+                                Exception("GitHub API /releases list returned status code ${listResponse.code}")
+                            )
                         }
                     }
                 } else {
                     Log.w(TAG, "GitHub API returned status code ${response.code} for $customRepo")
+                    return@withContext Result.failure(
+                        Exception("GitHub API returned status code ${response.code}")
+                    )
                 }
             }
 
             if (releaseJson == null) {
-                // No release published on GitHub yet or repo not found - user is on latest version
                 Log.d(TAG, "No GitHub release found for $customRepo. Treating as up-to-date.")
                 return@withContext Result.success(null)
             }
 
             val releaseObj = releaseJson ?: return@withContext Result.success(null)
+
+            if (releaseObj.optBoolean("draft", false)) {
+                Log.w(TAG, "Release is marked as draft, ignoring.")
+                return@withContext Result.success(null)
+            }
 
             val tagName = releaseObj.optString("tag_name", "")
             if (tagName.isBlank()) {
@@ -111,8 +127,8 @@ class UpdateChecker(
                 return@withContext Result.success(null)
             }
 
-            val releaseTitle = releaseObj.optString("name", "Anshu Mock v$latestVersion")
-            val releaseNotes = releaseObj.optString("body", "Bug fixes and performance improvements.")
+            val releaseTitle = releaseObj.optString("name").ifBlank { "Anshu Mock v$latestVersion" }
+            val releaseNotes = releaseObj.optString("body").ifBlank { "Bug fixes and performance improvements." }
             val assetsArray = releaseObj.optJSONArray("assets")
 
             if (assetsArray == null || assetsArray.length() == 0) {
