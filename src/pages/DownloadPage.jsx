@@ -169,6 +169,7 @@ export function DownloadPage({ app, releaseData, loading }) {
               {hasApk && downloadUrl ? (
                 <a
                   href={downloadUrl}
+                  rel="noopener noreferrer"
                   onClick={() => {
                     trackDownload(app?.name || 'Anshu Mock', latestVersion, downloadUrl);
                     try {
@@ -293,6 +294,7 @@ export function DownloadPage({ app, releaseData, loading }) {
                           {apk ? (
                             <a
                               href={apk.browser_download_url}
+                              rel="noopener noreferrer"
                               onClick={() => trackDownload(app?.name || 'Anshu Mock', tagName, apk.browser_download_url)}
                               className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-subtle transition-all"
                             >

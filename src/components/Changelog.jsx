@@ -130,6 +130,7 @@ export function Changelog({ isOpen, onClose, releaseData, app }) {
 
                           <a
                             href={apk.browser_download_url}
+                            rel="noopener noreferrer"
                             className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold inline-flex items-center gap-1.5 self-start sm:self-auto"
                           >
                             <span className="material-symbols-outlined text-[16px]">download</span>

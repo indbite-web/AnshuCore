@@ -104,6 +104,7 @@ export function AppCard({ app, releaseData, loading, onOpenChangelog, onRetry })
             {hasApk && releaseData?.downloadUrl ? (
               <a
                 href={releaseData.downloadUrl}
+                rel="noopener noreferrer"
                 onClick={() => {
                   trackDownload(app.name, releaseData.latestVersion, releaseData.downloadUrl);
                   try {
